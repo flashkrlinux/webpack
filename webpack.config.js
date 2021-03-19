@@ -2,14 +2,25 @@ const HtmlWebPackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsPlugin= require('optimize-css-assets-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
- 
+const MinifyPlugin = require("babel-minify-webpack-plugin");
+
+
 
 module.exports = {
 
-    mode: 'development',
+    mode: 'production',
+    
     optimization:{
         minimizer: [new OptimizeCssAssetsPlugin() ]
     },
+    
+    output: {
+        filename: 'main.[contenthash].js',
+        clean: true
+    },
+  
+   
+    
     module: {
         rules: [
            
@@ -35,6 +46,13 @@ module.exports = {
                         'css-loader' 
                     ]
              },
+             {
+                test: /\.m?js$/,
+                exclude: /node_modules/,
+                use: [
+                   "babel-loader"
+                ]
+              }
              
         ]
     },
@@ -44,7 +62,7 @@ module.exports = {
             filename: './index.html'
         }),
         new MiniCssExtractPlugin({
-            filename: '[name].css',
+            filename: '[name].[contenthash].css',
             ignoreOrder: false
         }),
         new CopyPlugin({
@@ -52,5 +70,7 @@ module.exports = {
             { from: "src/assets", to: "assets/" },
         ]
         }),
-        new HtmlWebpackPlugin()
+        new MinifyPlugin(),
+      
+  
     ]}
